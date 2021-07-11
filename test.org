@@ -1,0 +1,46 @@
+* Test
+
+  #+name: test
+  #+begin_src rust :tangle src/lib.rs :eval no
+    #[cfg(test)]
+    mod tests {
+	use super::*;
+
+	#[test]
+	fn writes_upcased_input_to_output() {
+	    let mut output: Vec<u8> = Vec::new();
+
+	    upcase(&mut "Hello, world!\n".as_bytes(), &mut output).unwrap();
+	    assert_eq!(&output, b"HELLO, WORLD!\n");
+	}
+    }
+  #+end_src
+
+  #+begin_src shell :exports both :results output :prologue "exec 2>&1", :epilogue "true"
+    cargo test
+  #+end_src
+
+  #+RESULTS:
+  #+begin_example
+     Compiling upcase v0.1.0 (/Users/jeffkreeftmeijer/upcase)
+  error[E0425]: cannot find function `upcase` in this scope
+   --> src/lib.rs:9:2
+    |
+  9 |     upcase(&mut "Hello, world!\n".as_bytes(), &mut output).unwrap();
+    |     ^^^^^^ not found in this scope
+
+  warning: unused import: `super::*`
+   --> src/lib.rs:3:9
+    |
+  3 |     use super::*;
+    |         ^^^^^^^^
+    |
+    = note: `#[warn(unused_imports)]` on by default
+
+  error: aborting due to previous error; 1 warning emitted
+
+  For more information about this error, try `rustc --explain E0425`.
+  error: could not compile `upcase`
+
+  To learn more, run the command again with --verbose.
+  #+end_example

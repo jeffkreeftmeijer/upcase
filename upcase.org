@@ -2,3 +2,4 @@
 #+PROPERTY: header-args    :eval no :cache no
 
 #+include: "prototype.org"
+#+include: "test.org"
