@@ -4,3 +4,4 @@
 #+include: "prototype.org"
 #+include: "test.org"
 #+include: "compile.org"
+#+include: "helper.org"

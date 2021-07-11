@@ -3,6 +3,7 @@
 # eval: (org-babel-lob-ingest (concat (file-name-directory buffer-file-name) "test.org"))
 # End:
 
+  #+name: empty-implementation
   #+begin_src rust :tangle src/lib.rs :eval no
     use std::io::{Error, Read, Write};
 
