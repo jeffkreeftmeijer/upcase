@@ -1,0 +1,16 @@
+* Main
+
+  #+begin_src rust :tangle src/main.rs :eval no
+    use std::io;
+
+    fn main() -> io::Result<()> {
+	upcase::upcase(&mut io::stdin(), &mut io::stdout())
+    }
+  #+end_src
+
+  #+begin_src shell :exports both :results output
+    echo "Hello, world!" | cargo run
+  #+end_src
+
+  #+RESULTS:
+  : HELLO, WORLD!
