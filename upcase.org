@@ -1,0 +1,4 @@
+#+title: Testing input and output in Rust command-line applications
+#+PROPERTY: header-args    :eval no :cache no
+
+#+include: "prototype.org"

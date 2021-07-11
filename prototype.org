@@ -1,0 +1,22 @@
+* Prototype
+
+#+begin_src rust :tangle src/main.rs
+  use std::io;
+  use std::io::{Read, Write};
+
+  fn main() -> io::Result<()> {
+      let mut buffer = "".to_string();
+
+      io::stdin().read_to_string(&mut buffer)?;
+      io::stdout().write_all(buffer.to_uppercase().as_bytes())?;
+
+      Ok(())
+  }
+#+end_src
+
+#+begin_src shell :exports both :results output
+echo "Hello, world!" | cargo run
+#+end_src
+
+#+RESULTS:
+: HELLO, WORLD!
