@@ -1,0 +1,54 @@
+* Implementation
+# Local Variables:
+# eval: (org-babel-lob-ingest (concat (file-name-directory buffer-file-name) "helper.org"))
+# End:
+
+  #+begin_src rust :tangle src/lib.rs :eval no
+    use std::io::{Error, Read, Write};
+
+    pub fn upcase(
+	input: &mut impl Read,
+	output: &mut impl Write,
+    ) -> Result<(), Error> {
+	let mut buffer = "".to_string();
+
+	input.read_to_string(&mut buffer)?;
+	output.write_all(buffer.to_uppercase().as_bytes())?;
+
+	Ok(())
+    }
+  #+end_src
+
+  #+begin_src rust :exports none :tangle src/lib.rs :noweb yes
+
+    <<test-2>>
+  #+end_src
+
+  #+begin_src shell :exports both :results output :prologue "exec 2>&1", :epilogue "true"
+    cargo test
+  #+end_src
+
+  #+RESULTS:
+  #+begin_example
+     Compiling upcase v0.1.0 (/Users/jeffkreeftmeijer/upcase)
+      Finished test [unoptimized + debuginfo] target(s) in 0.98s
+       Running target/debug/deps/upcase-37c459487bdbe122
+
+  running 1 test
+  test tests::writes_upcased_input_to_output ... ok
+
+  test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
+
+       Running target/debug/deps/upcase-94165bfdf5bd4e25
+
+  running 0 tests
+
+  test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
+
+     Doc-tests upcase
+
+  running 0 tests
+
+  test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
+
+  #+end_example

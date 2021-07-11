@@ -1,10 +1,15 @@
 use std::io::{Error, Read, Write};
 
 pub fn upcase(
-    _input: &mut impl Read,
-    _output: &mut impl Write
+    input: &mut impl Read,
+    output: &mut impl Write,
 ) -> Result<(), Error> {
-  Ok(())
+    let mut buffer = "".to_string();
+
+    input.read_to_string(&mut buffer)?;
+    output.write_all(buffer.to_uppercase().as_bytes())?;
+
+    Ok(())
 }
 
 #[cfg(test)]

@@ -8,6 +8,7 @@
 
   #+end_src
 
+  #+name: test-2
   #+begin_src rust :tangle src/lib.rs :eval no
     #[cfg(test)]
     mod tests {
