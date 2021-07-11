@@ -1,3 +1,12 @@
+use std::io::{Error, Read, Write};
+
+pub fn upcase(
+    _input: &mut impl Read,
+    _output: &mut impl Write
+) -> Result<(), Error> {
+  Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -1,0 +1,49 @@
+* Compile
+# Local Variables:
+# eval: (org-babel-lob-ingest (concat (file-name-directory buffer-file-name) "test.org"))
+# End:
+
+  #+begin_src rust :tangle src/lib.rs :eval no
+    use std::io::{Error, Read, Write};
+
+    pub fn upcase(
+	_input: &mut impl Read,
+	_output: &mut impl Write
+    ) -> Result<(), Error> {
+      Ok(())
+    }
+  #+end_src
+
+  #+begin_src rust :exports none :tangle src/lib.rs :eval no :noweb yes
+
+    <<test>>
+  #+end_src
+
+  #+begin_src shell :exports both :results output :prologue "exec 2>&1", :epilogue "true"
+    cargo test
+  #+end_src
+
+  #+RESULTS:
+  #+begin_example
+      Finished test [unoptimized + debuginfo] target(s) in 0.00s
+       Running target/debug/deps/upcase-37c459487bdbe122
+
+  running 1 test
+  test tests::writes_upcased_input_to_output ... FAILED
+
+  failures:
+
+  ---- tests::writes_upcased_input_to_output stdout ----
+  thread 'tests::writes_upcased_input_to_output' panicked at 'assertion failed: `(left == right)`
+    left: `[]`,
+   right: `[72, 69, 76, 76, 79, 44, 32, 87, 79, 82, 76, 68, 33, 10]`', src/lib.rs:19:5
+  note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+  failures:
+      tests::writes_upcased_input_to_output
+
+  test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out
+
+  error: test failed, to rerun pass '--lib'
+  #+end_example
