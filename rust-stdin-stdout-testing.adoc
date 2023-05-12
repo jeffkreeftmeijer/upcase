@@ -3,7 +3,7 @@ Jeff Kreeftmeijer <https://jeffkreeftmeijer.com>
 2021-06-29
 :description: Using abstraction through Rust’s Read and Write traits, we can swap the input and output for byte arrays and vectors during testing instead of capturing stdout.
 :url: https://jeffkreeftmeijer.com/rust-stdin-stdout-testing/
-:image: streams-dark.png
+:image: streams-dark-twitter.png
 ifdef::env-github[]
 :imagesdir: https://gist.githubusercontent.com/jeffkreeftmeijer/71f400a176f896c8f5b57a4628a7a889/raw
 endif::[]
