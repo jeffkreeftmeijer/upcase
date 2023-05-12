@@ -1,0 +1,133 @@
+#+title: Testing input and output in Rust command line applications
+#+author: Jeff Kreeftmeijer
+#+date: 2021-06-29
+#+description: Using abstraction through Rust’s Read and Write traits, we can swap the input and output for byte arrays and vectors during testing instead of capturing stdout.
+#+options: toc:nil num:nil
+
+Working with complex input and output can make command line applications challenging to test, as it is inconvenient to capture the output stream to test if the program returns the correct output.
+Using abstraction through Rust's =Read= and =Write= traits, we can swap the input and output for byte arrays and vectors during testing instead.
+
+[[./streams-dark.png]]
+
+* Standard Streams
+
+/Standard streams/ are abstractions used to handle data input and output to an operating system process.
+Each program has access to an input stream (/standard input/, or /stdin/), an output stream (/standard output/, or /stdout/), and an error stream (/standard error/, or /stderr/) inherited from the parent process.
+
+For example, =grep(1)= filters lines read from stdin with a search pattern ("three" in this case) and prints the matching lines to stdout.
+After starting, =grep= halts to wait for input from stdin.
+By typing this input into the terminal, we can see that =grep= prints any line that matches the pattern back to stdout, which the terminal displays.
+Then, the program returns to waiting for input until it receives an /EOF/ (/end-of-file/), which we pass by pressing ~ctrl+D~ in the terminal.
+
+#+begin_src shell
+grep tree
+one
+two
+three
+#+end_src
+
+#+begin_example
+three
+#+end_example
+
+Because of this abstraction, programs can use /pipelines/ to pass the output from one program as the input to another by piping stdout from one process to stdin for another.
+
+Here, =ls(1)= prints the current directory's contents to stdout.
+This example uses a /pipe/ (=|=) to create a pipeline, to pass the output from =ls= as input to =grep=.
+=grep= then filters to only print lines matching the passed pattern ("Cargo").
+
+#+begin_src shell
+ls -l ~/pager | grep Cargo
+#+end_src
+
+#+begin_example
+Cargo.lock
+Cargo.toml
+#+end_example
+
+* =Stdin=, =Stdout= and =Stderr= in Rust
+
+Rust provides handles to the standard streams through the [[https://doc.rust-lang.org/std/io/struct.Stdin.html][=Stdin=]], [[https://doc.rust-lang.org/std/io/struct.Stdout.html][=Stdout=]] and [[https://doc.rust-lang.org/std/io/struct.Stderr.html][=Stderr=]] structs, which are created with the [[https://doc.rust-lang.org/std/io/fn.stdin.html][=io::stdin()=]], [[https://doc.rust-lang.org/std/io/fn.stdout.html][=io::stdout()=]] and [[https://doc.rust-lang.org/std/io/fn.stderr.html][=io::stderr()=]] functions respectively.
+
+This program takes input through stdin, converts the received string to uppercase and prints it back out to the terminal through stdout:
+
+#+caption: =src/main.rs=
+#+begin_src rust
+use std::io;
+use std::io::{Read, Write};
+
+fn main() -> io::Result<()> {
+    let mut buffer = "".to_string();
+
+    io::stdin().read_to_string(&mut buffer)?;
+    io::stdout().write_all(buffer.to_uppercase().as_bytes())?;
+
+    Ok(())
+}
+#+end_src
+
+The stream handlers implement the [[https://doc.rust-lang.org/std/io/trait.Read.html][=Read=]] and [[https://doc.rust-lang.org/std/io/trait.Write.html][=Write=]] traits to read from and write to the streams.
+Because of that, they share part of their implementation with other /Readers/ and /Writers/, like [[https://doc.rust-lang.org/std/fs/struct.File.html][=File=]].
+
+* Abstraction using the =Read= and =Write= traits
+
+One of the issues[fn:another-issue] in the example above is that it uses the =Stdout= and =Stdin= structs directly, making our program challenging to test because it is inconvenient to pass input through stdin and capture stdout to assert that the program produces the correct results.
+
+To make our program more modular, we will decouple it from the =Stdin= and =Stdout= structs and pass the input and output as arguments to a more abstract, separate function.
+
+In the test for the extracted function, we swap =Stdin= and =Stdout= out for other implementors of the =Read= and =Write= traits: a byte array for input and a vector for output.
+
+#+caption: =src/lib.rs=
+#+begin_src rust
+mod tests {
+    use super::*;
+
+    #[test]
+    fn writes_upcased_input_to_output() {
+        let mut output: Vec<u8> = Vec::new();
+
+        upcase(&mut "Hello, world!\n".as_bytes(), &mut output).unwrap();
+        assert_eq!(&output, b"HELLO, WORLD!\n");
+    }
+}
+#+end_src
+
+The implementation that satisfies the test looks like the original example, with one significant difference.
+Because the test passes the input and output as arguments, we can use trait objects to allow any type as long as it implements the =Read= and =Write= traits:
+
+#+caption: =src/lib.rs=
+#+begin_src rust
+use std::io::{Error, Read, Write};
+
+pub fn upcase(
+    input: &mut impl Read,
+    output: &mut impl Write,
+) -> Result<(), Error> {
+    let mut buffer = "".to_string();
+
+    input.read_to_string(&mut buffer)?;
+    output.write_all(buffer.to_uppercase().as_bytes())?;
+
+    Ok(())
+}
+#+end_src
+
+Finally, we replace the prototype in =src/main.rs= with a call to our new implementation with a =Stdin= and =Stdout= struct for the input and output:
+
+#+caption: =src/main.rs=
+#+begin_src rust
+use std::io;
+
+fn main() -> io::Result<()> {
+    upcase::upcase(&mut io::stdin(), &mut io::stdout())
+}
+#+end_src
+
+By abstracting =Stdin= and =Stdout= out of the implementation, we made our program more modular, allowing us to test the code without resorting to capturing stdout to assert that the printed result matched our expectations.
+
+Aside from better testability, making our implementation more modular will allow us to work with other data types in the future.
+For example, we might add a command-line option that takes a filename and pass a =File= to =upcase()=.
+Since =File= also implements the =Read= trait, that would work without further modifications in our implementation.
+
+[fn:another-issue] Another issue with this example is that it uses [[https://doc.rust-lang.org/std/io/trait.Read.html#method.read_to_string][=Read::read_to_string()=]], which will read the contents of the whole stream from the input before writing everything to stdout at once, which is inefficient, especially for larger inputs.
+A more efficient implementation could use buffered reading through the =BufRead= trait to read and write the input stream line by line.
