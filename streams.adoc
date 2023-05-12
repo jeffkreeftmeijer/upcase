@@ -1,22 +1,17 @@
 = Working with standard streams in Rust
 Jeff Kreeftmeijer <https://jeffkreeftmeijer.com>
 2021-06-29
+:fn-bufread:
 
-Most operating systems provide three different I/O streams, consisting of
-standard input (stdin), standard output (stdout), and standard error (stderr).
-These standard streams provide an abstraction around input and output, removing
-the need for programs to explicitly connect to input and output devices--like
-keyboards and displays--or other programs.
+Most operating systems provide three different I/O streams, consisting of standard input (stdin), standard output (stdout), and standard error (stderr).
+These standard streams provide an abstraction around input and output, removing the need for programs to explicitly connect to input and output devices--like keyboards and displays--or other programs.
 
-The three streams are channels for passing input (stdin) and output to and from
-a program. The two output streams handle general output (stdout) and errors
-(stderr).
+The three streams are channels for passing input (stdin) and output to and from a program.
+The two output streams handle general output (stdout) and errors (stderr).
 
-Because of this abstraction, programs can use piping to pass the input from one
-program to another. For example, `ls` writes a list of directory contents to
-stdout, and `grep` takes input through stdin to filter. By chaining these
-together in a pipe, we can print files that match the word "Cargo" in the
-current directory to stdout:
+Because of this abstraction, programs can use piping to pass the input from one program to another.
+For example, `ls` writes a list of directory contents to stdout, and `grep` takes input through stdin to filter.
+By chaining these together in a pipe, we can print files that match the word "Cargo" in the current directory to stdout:
 
     $ ls | grep Cargo
     Cargo.lock
@@ -25,13 +20,9 @@ current directory to stdout:
 
 == `Stdin`, `Stdout` and `Stderr` in Rust
 
-Rust provides handles to the standard streams through the `Stdin`, `Stdout` and
-`Stderr` structs, which are created with the `io::stdin()`, `io::stdout()` and
-`io::stderr()`  functions respectively. 
+Rust provides handles to the standard streams through the `Stdin`, `Stdout` and `Stderr` structs, which are created with the `io::stdin()`, `io::stdout()` and `io::stderr()`  functions respectively.
 
-A program that takes input through stdin, then converts the received string to
-uppercase, and prints it back out to the terminal through stdout might look
-like this:
+A program that takes input through stdin, then converts the received string to uppercase, and prints it back out to the terminal through stdout might look like this:
 
 .`src/main.rs`
 ```rust
@@ -48,29 +39,15 @@ fn main() -> io::Result<()> {
 }
 ```
 
-This example includes the `Read` and `Write` traits to ensure
-they're in scope, as `Stdin` and `Stdout` use these in their
-implementations to provide the `Read::read_to_string()` and
-`Write::write_all()` methods.
+This example includes the `Read` and `Write` traits to ensure they're in scope, as `Stdin` and `Stdout` use these in their implementations to provide the `Read::read_to_string()` and `Write::write_all()` methods.
 
 == Decoupling using the `Read` and `Write` traits
 
-One of the issuesfootnote:[Another issue with this prototype is that it uses
-`Read::read_to_string()`, which will read the contents of the whole stream from
-the input before writing everything to stdout at once, which is inefficient,
-especially for larger inputs. A more efficient implementation could use
-buffered reading through the `BufRead` trait to read and write the input stream
-line by line.] in the prototype above is that it currently uses the `Stdout`
-and `Stdin` structs directly, which makes our program difficult to test. It's
-inconvenient to pass input through stdin and capture stdout to assert the
-program produces the correct results.
+One of the issuesfootnote:[Another issue with this prototype is that it uses `Read::read_to_string()`, which will read the contents of the whole stream from the input before writing everything to stdout at once, which is inefficient, especially for larger inputs. A more efficient implementation could use buffered reading through the `BufRead` trait to read and write the input stream line by line.] in the prototype above is that it currently uses the `Stdout` and `Stdin` structs directly, which makes our program difficult to test.
+It's inconvenient to pass input through stdin and capture stdout to assert the program produces the correct results.
 
-To make our program more modular, we will decouple it from the `Stdin` and
-`Stdout` structs by passing the input and output as arguments to a more
-abstract, separate function. Our prototype was based on functions from the
-`Read` and `Write` traits, so we will test our new function with input and
-output data types that also implement those traits: an byte array for input and
-a vector for output.
+To make our program more modular, we will decouple it from the `Stdin` and `Stdout` structs by passing the input and output as arguments to a more abstract, separate function.
+Our prototype was based on functions from the `Read` and `Write` traits, so we will test our new function with input and output data types that also implement those traits: an byte array for input and a vector for output.
 
 .`src/lib.rs`
 ```rust
@@ -86,10 +63,8 @@ mod tests {
 }
 ```
 
-The implementation that satisfies the test looks like the original prototype
-from `lib/main.rs`, with a significant difference. Because the test passes the
-input and output as arguments, we can use trait objects to allow any type as
-long as it implements the `Read` and `Write` traits:
+The implementation that satisfies the test looks like the original prototype from `lib/main.rs`, with a significant difference.
+Because the test passes the input and output as arguments, we can use trait objects to allow any type as long as it implements the `Read` and `Write` traits:
 
 .`src/lib.rs`
 ```rust
@@ -105,8 +80,7 @@ pub fn upcase(input: &mut dyn Read, output: &mut dyn Write) -> Result<(), Error>
 }
 ```
 
-Finally, we replace the prototype in `src/main.rs` with a call to our new
-implementation with a `Stdin` and `Stdout` struct for the input and output:
+Finally, we replace the prototype in `src/main.rs` with a call to our new implementation with a `Stdin` and `Stdout` struct for the input and output:
 
 .`src/main.rs`
 ```
@@ -117,12 +91,8 @@ fn main() -> io::Result<()> {
 }
 ```
 
-By abstracting `Stdin` and `Stdout` out of the implementation, we made our
-program more modular, allowing us to test the code without resorting to
-capturing stdout to assert that the printed result matched our expectations. 
+By abstracting `Stdin` and `Stdout` out of the implementation, we made our program more modular, allowing us to test the code without resorting to capturing stdout to assert that the printed result matched our expectations.
 
-Aside from better testability, making our implementation more modular will
-allow us to work with other data types in the future. For example, we might add
-a command-line option that takes a filename and pass a `File` to `upcase()`.
-Since `File` also implements the `Read` trait, that would work without further
-modifications in our implementation.
+Aside from better testability, making our implementation more modular will allow us to work with other data types in the future.
+For example, we might add a command-line option that takes a filename and pass a `File` to `upcase()`.
+Since `File` also implements the `Read` trait, that would work without further modifications in our implementation.
