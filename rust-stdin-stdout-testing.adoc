@@ -2,6 +2,8 @@
 Jeff Kreeftmeijer <https://jeffkreeftmeijer.com>
 2021-06-29
 
+Working with complex input and output can make command line applications challenging to test, as it is inconvenient to capture the output stream to test if the program returns the correct output. Using abstraction through Rust's `Read` and `Write` traits, we can swap the input and output for byte arrays and vectors to use while testing instead.
+
 image::streams-dark.png[]
 
 == Standard Streams
