@@ -2,6 +2,10 @@
 Jeff Kreeftmeijer <https://jeffkreeftmeijer.com>
 2021-06-29
 
+image::streams-dark.png[]
+
+== Standard Streams
+
 _Standard streams_ are abstractions used to handle data input and output to an operating system process.
 Each program has access to an input stream (_standard input_, or _stdin_), an output stream (_standard output_, or _stdout_), and an error stream (_standard error_, or _stderr_) inherited from the parent process.
 
