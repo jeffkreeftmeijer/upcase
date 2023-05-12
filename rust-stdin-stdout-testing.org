@@ -81,6 +81,7 @@ To make our program more modular, we will decouple it from the =Stdin= and =Stdo
 In the test for the extracted function, we swap =Stdin= and =Stdout= out for other implementors of the =Read= and =Write= traits: a byte array for input and a vector for output.
 
 #+caption: =src/lib.rs=
+#+headers: :tangle src/lib.rs
 #+begin_src rust
 mod tests {
     use super::*;
@@ -99,6 +100,7 @@ The implementation that satisfies the test looks like the original example, with
 Because the test passes the input and output as arguments, we can use trait objects to allow any type as long as it implements the =Read= and =Write= traits:
 
 #+caption: =src/lib.rs=
+#+headers: :tangle src/lib.rs
 #+begin_src rust
 use std::io::{Error, Read, Write};
 
@@ -118,6 +120,7 @@ pub fn upcase(
 Finally, we replace the prototype in =src/main.rs= with a call to our new implementation with a =Stdin= and =Stdout= struct for the input and output:
 
 #+caption: =src/main.rs=
+#+headers: :tangle src/main.rs
 #+begin_src rust
 use std::io;
 
