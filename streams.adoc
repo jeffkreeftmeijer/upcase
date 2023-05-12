@@ -54,7 +54,7 @@ fn main() -> io::Result<()> {
 
 The stream handlers implement the `Read` footnote:[https://doc.rust-lang.org/std/io/trait.Read.html] and `Write` footnote:[https://doc.rust-lang.org/std/io/trait.Write.html] traits to read from and write to the streams. Because of that, they share part of their implementation with other "`Readers`" and "`Writers`", like `File` footnote:[https://doc.rust-lang.org/std/fs/struct.File.html].
 
-== Decoupling using the `Read` and `Write` traits
+== Abstraction using the `Read` and `Write` traits
 
 One of the issuesfootnote:[Another issue with this example is that it uses `Read::read_to_string()`, which will read the contents of the whole stream from the input before writing everything to stdout at once, which is inefficient, especially for larger inputs. A more efficient implementation could use buffered reading through the `BufRead` trait to read and write the input stream line by line.] in the <<upcase, example>> above is that it uses the `Stdout` and `Stdin` structs directly, making our program challenging to test, because it is inconvenient to pass input through stdin and capture stdout to assert that the program produces the correct results.
 
