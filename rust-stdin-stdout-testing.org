@@ -74,6 +74,19 @@ This program takes input through stdin, converts the received string to uppercas
 The stream handlers implement the [[https://doc.rust-lang.org/std/io/trait.Read.html][=Read=]] and [[https://doc.rust-lang.org/std/io/trait.Write.html][=Write=]] traits to read from and write to the streams.
 Because of that, they share part of their implementation with other /Readers/ and /Writers/, like [[https://doc.rust-lang.org/std/fs/struct.File.html][=File=]].
 
+To test the program, we can pipe the output of ~ls | grep Cargo~ to it, which will print the file names in uppercase:
+
+#+headers: :cache yes
+#+headers: :exports both
+#+headers: :results scalar
+#+begin_src shell
+  ls | grep Cargo | cargo run
+#+end_src
+
+#+RESULTS[64e9dbe6d91eaad0da711b3657c7affcdef91686]:
+: CARGO.LOCK
+: CARGO.TOML
+
 * Abstraction using the =Read= and =Write= traits
 
 One of the issues[fn:another-issue] in the example above is that it uses the =Stdout= and =Stdin= structs directly, making our program challenging to test because it is inconvenient to pass input through stdin and capture stdout to assert that the program produces the correct results.
