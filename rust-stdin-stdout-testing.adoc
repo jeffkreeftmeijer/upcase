@@ -50,17 +50,7 @@ Rust provides handles to the standard streams through the https://doc.rust-lang.
 ====
 .`src/main.rs`
 ```rust
-use std::io;
-use std::io::{Read, Write};
-
-fn main() -> io::Result<()> {
-    let mut buffer = "".to_string();
-
-    io::stdin().read_to_string(&mut buffer)?;
-    io::stdout().write_all(buffer.to_uppercase().as_bytes())?;
-
-    Ok(())
-}
+include::https://raw.githubusercontent.com/jeffkreeftmeijer/upcase/3b038e6b0845fa7dc4047d64c23b2344d9b7caed/src/main.rs[]
 ```
 ====
 
@@ -76,18 +66,7 @@ To make our program more modular, we will decouple it from the `Stdin` and `Stdo
 ====
 .`src/lib.rs`
 ```rust
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn writes_upcased_input_to_output() {
-        let mut output: Vec<u8> = Vec::new();
-
-        upcase(&mut "Hello, world!\n".as_bytes(), &mut output).unwrap();
-        assert_eq!(&output, b"HELLO, WORLD!\n");
-    }
-}
+include::https://raw.githubusercontent.com/jeffkreeftmeijer/upcase/64534182120b1eb5eace92f18bb4e8cdb4cf25fd/src/lib.rs[]
 ```
 ====
 
@@ -95,17 +74,7 @@ mod tests {
 ====
 .`src/lib.rs`
 ```rust
-pub fn upcase(
-    input: &mut dyn Read,
-    output: &mut dyn Write,
-) -> Result<(), Error> {
-    let mut buffer = "".to_string();
-
-    input.read_to_string(&mut buffer)?;
-    output.write_all(buffer.to_uppercase().as_bytes())?;
-
-    Ok(())
-}
+include::https://raw.githubusercontent.com/jeffkreeftmeijer/upcase/bedb37f0ac42921f0ee60afd24d34113d25fca04/src/lib.rs[lines=1..13]
 ```
 ====
 
@@ -113,11 +82,7 @@ pub fn upcase(
 ====
 .`src/main.rs`
 ```
-use std::io;
-
-fn main() -> io::Result<()> {
-    upcase::upcase(&mut io::stdin(), &mut io::stdout())
-}
+include::https://raw.githubusercontent.com/jeffkreeftmeijer/upcase/7a9db42020d736aac278e41377dd16b0fa96607b/src/main.rs[]
 ```
 ====
 
