@@ -39,14 +39,16 @@ Here, =ls(1)= prints the current directory's contents to stdout.
 This example uses a /pipe/ (=|=) to create a pipeline, to pass the output from =ls= as input to =grep=.
 =grep= then filters to only print lines matching the passed pattern ("Cargo").
 
+#+headers: :cache yes
+#+headers: :exports both
+#+headers: :results scalar
 #+begin_src shell
-  ls -l ~/pager | grep Cargo
+  ls | grep Cargo
 #+end_src
 
-#+begin_example
-Cargo.lock
-Cargo.toml
-#+end_example
+#+RESULTS[bf4c765f11eeee2dd4f8116f09236ea7e49d4120]:
+: Cargo.lock
+: Cargo.toml
 
 * =Stdin=, =Stdout= and =Stderr= in Rust
 
