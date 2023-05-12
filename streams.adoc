@@ -31,7 +31,7 @@ _Cargo.toml_
 
 == `Stdin`, `Stdout` and `Stderr` in Rust
 
-Rust provides handles to the standard streams through the `Stdin` footnote:[https://doc.rust-lang.org/std/io/struct.Stdin.html], `Stdout` footnote:[https://doc.rust-lang.org/std/io/struct.Stdout.html] and `Stderr` footnote:[https://doc.rust-lang.org/std/io/struct.Stderr.html] structs, which are created with the `io::stdin()` footnote:[https://doc.rust-lang.org/std/io/fn.stdin.html], `io::stdout()` footnote:[https://doc.rust-lang.org/std/io/fn.stdout.html] and `io::stderr()` footnote:[https://doc.rust-lang.org/std/io/fn.stderr.html] functions respectively.
+Rust provides handles to the standard streams through the https://doc.rust-lang.org/std/io/struct.Stdin.html[`Stdin`], https://doc.rust-lang.org/std/io/struct.Stdout.html[`Stdout`] and https://doc.rust-lang.org/std/io/struct.Stderr.html[`Stderr`] structs, which are created with the https://doc.rust-lang.org/std/io/fn.stdin.html[`io::stdin()`], https://doc.rust-lang.org/std/io/fn.stdout.html[`io::stdout()`] and https://doc.rust-lang.org/std/io/fn.stderr.html[`io::stderr()`] functions respectively.
 
 .A program that takes input through stdin, then converts the received string to uppercase, and prints it back out to the terminal through stdout.
 [#upcase]
@@ -52,7 +52,7 @@ fn main() -> io::Result<()> {
 ```
 ====
 
-The stream handlers implement the `Read` footnote:[https://doc.rust-lang.org/std/io/trait.Read.html] and `Write` footnote:[https://doc.rust-lang.org/std/io/trait.Write.html] traits to read from and write to the streams. Because of that, they share part of their implementation with other "`Readers`" and "`Writers`", like `File` footnote:[https://doc.rust-lang.org/std/fs/struct.File.html].
+The stream handlers implement the https://doc.rust-lang.org/std/io/trait.Read.html[`Read`] and https://doc.rust-lang.org/std/io/trait.Write.html[`Write`] traits to read from and write to the streams. Because of that, they share part of their implementation with other "`Readers`" and "`Writers`", like https://doc.rust-lang.org/std/fs/struct.File.html[`File`].
 
 == Abstraction using the `Read` and `Write` traits
 
