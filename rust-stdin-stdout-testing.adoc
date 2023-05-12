@@ -87,8 +87,6 @@ mod tests {
 ====
 .`src/lib.rs`
 ```rust
-use std::io::{Error, Read, Write};
-
 pub fn upcase(
     input: &mut dyn Read,
     output: &mut dyn Write,
