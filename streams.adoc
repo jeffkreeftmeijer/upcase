@@ -44,7 +44,7 @@ This example includes the `Read` footnote:[https://doc.rust-lang.org/std/io/trai
 
 One of the issuesfootnote:[Another issue with this prototype is that it uses `Read::read_to_string()`, which will read the contents of the whole stream from the input before writing everything to stdout at once, which is inefficient, especially for larger inputs. A more efficient implementation could use buffered reading through the `BufRead` trait to read and write the input stream line by line.] in the prototype above is that it uses the `Stdout` and `Stdin` structs directly, making our program challenging to test, because it is inconvenient to pass input through stdin and capture stdout to assert that the program produces the correct results.
 
-To make our program more modular, we will decouple it from the `Stdin` and `Stdout` structs by passing the input and output as arguments to a more abstract, separate function.
+To make our program more modular, we will decouple it from the `Stdin` and `Stdout` structs and pass the input and output as arguments to a more abstract, separate function.
 Our prototype was based on functions from the `Read` and `Write` traits, so we will test our new function with input and output data types that also implement those traits: an byte array for input and a vector for output.
 
 .`src/lib.rs`
