@@ -1,3 +1,6 @@
+:PROPERTIES:
+:ID:       16C2E28E-08F9-4C49-8316-E1F21BE45F79
+:END:
 #+title: Testing input and output in Rust command line applications
 #+author: Jeff Kreeftmeijer
 #+date: 2021-06-29
