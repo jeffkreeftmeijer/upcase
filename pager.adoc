@@ -37,6 +37,7 @@ it when we implement backwards scrolling.]
 To mimic this, our first behaviour prints any input out as output.
 // TODO: io, stdin/stdout
 
+.`src/lib.rs`
 ``` rust
 #[cfg(test)]
 mod tests {
@@ -49,3 +50,11 @@ mod tests {
     }
 }
 ```
+
+Our test uses a `Vec<u8>` in place of stdout to write the output to. It'll then
+call `super::print()` (which refers to `pager::print()`, which we're
+implementing in a minute) and passes an array of bytes and a mutable reference
+to the output vector. Our assertion ensures the output matches the input we
+passed in.
+
+// TODO: Explain why the input array is mutable
