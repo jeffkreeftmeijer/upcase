@@ -11,7 +11,7 @@ image::streams-dark.png[]
 _Standard streams_ are abstractions used to handle data input and output to an operating system process.
 Each program has access to an input stream (_standard input_, or _stdin_), an output stream (_standard output_, or _stdout_), and an error stream (_standard error_, or _stderr_) inherited from the parent process.
 
-.`grep(1)` filters lines read from stdin with a search pattern ("`three`" in this case) and prints matching lines to stdout. After starting, `grep` halts to wait for input from stdin. By typing this input into the terminal, we can see that `grep` prints any line that matches the pattern back to stdout, which the terminal displays. Then, the program returns to waiting for input until it receives an _EOF_ (_end-of-file_), which we pass by pressing kbd:[ctrl]+kbd:[D] in the terminal.
+.`grep(1)` filters lines read from stdin with a search pattern ("`three`" in this case) and prints the matching lines to stdout. After starting, `grep` halts to wait for input from stdin. By typing this input into the terminal, we can see that `grep` prints any line that matches the pattern back to stdout, which the terminal displays. Then, the program returns to waiting for input until it receives an _EOF_ (_end-of-file_), which we pass by pressing kbd:[ctrl]+kbd:[D] in the terminal.
 ====
 [subs=+quotes]
 ----
@@ -25,7 +25,7 @@ _three_
 
 Because of this abstraction, programs can use _pipelines_ to pass the output from one program as the input to another by piping stdout from one process to stdin for another.
 
-.`ls(1)` prints the current directory's contents to stdout. This example uses a _pipe_ (`|`) to create a pipeline, to pass the output from `ls` to `grep` as input. `grep` then filters to only print lines matching the passed pattern ("`Cargo`").
+.`ls(1)` prints the current directory's contents to stdout. This example uses a _pipe_ (`|`) to create a pipeline, to pass the output from `ls` as input to `grep`. `grep` then filters to only print lines matching the passed pattern ("`Cargo`").
 ====
 [subs=+quotes]
 ----
@@ -39,7 +39,7 @@ _Cargo.toml_
 
 Rust provides handles to the standard streams through the https://doc.rust-lang.org/std/io/struct.Stdin.html[`Stdin`], https://doc.rust-lang.org/std/io/struct.Stdout.html[`Stdout`] and https://doc.rust-lang.org/std/io/struct.Stderr.html[`Stderr`] structs, which are created with the https://doc.rust-lang.org/std/io/fn.stdin.html[`io::stdin()`], https://doc.rust-lang.org/std/io/fn.stdout.html[`io::stdout()`] and https://doc.rust-lang.org/std/io/fn.stderr.html[`io::stderr()`] functions respectively.
 
-.A program that takes input through stdin, then converts the received string to uppercase, and prints it back out to the terminal through stdout.
+.This program takes input through stdin, converts the received string to uppercase and prints it back out to the terminal through stdout.
 [#upcase]
 ====
 .`src/main.rs`
@@ -62,7 +62,7 @@ The stream handlers implement the https://doc.rust-lang.org/std/io/trait.Read.ht
 
 == Abstraction using the `Read` and `Write` traits
 
-One of the issuesfootnote:[Another issue with this example is that it uses https://doc.rust-lang.org/std/io/trait.Read.html#method.read_to_string[`Read::read_to_string()`], which will read the contents of the whole stream from the input before writing everything to stdout at once, which is inefficient, especially for larger inputs. A more efficient implementation could use buffered reading through the `BufRead` trait to read and write the input stream line by line.] in the <<upcase, example>> above is that it uses the `Stdout` and `Stdin` structs directly, making our program challenging to test, because it is inconvenient to pass input through stdin and capture stdout to assert that the program produces the correct results.
+One of the issuesfootnote:[Another issue with this example is that it uses https://doc.rust-lang.org/std/io/trait.Read.html#method.read_to_string[`Read::read_to_string()`], which will read the contents of the whole stream from the input before writing everything to stdout at once, which is inefficient, especially for larger inputs. A more efficient implementation could use buffered reading through the `BufRead` trait to read and write the input stream line by line.] in the <<upcase, example>> above is that it uses the `Stdout` and `Stdin` structs directly, making our program challenging to test because it is inconvenient to pass input through stdin and capture stdout to assert that the program produces the correct results.
 
 To make our program more modular, we will decouple it from the `Stdin` and `Stdout` structs and pass the input and output as arguments to a more abstract, separate function.
 
