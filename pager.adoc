@@ -1,4 +1,6 @@
 = Building a Terminal Pager in Rust
+Jeff Kreeftmeijer <https://jeffkreeftmeijer.com>
+2021-07-27
 
 A terminal pager is a unility that reads files and other inputs by page instead
 of printing the whole contents all at once. When opening a file in a utility
