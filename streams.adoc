@@ -20,8 +20,7 @@ By chaining these together in a pipe, we can print files that match the word "Ca
 
 == `Stdin`, `Stdout` and `Stderr` in Rust
 
-Rust provides handles to the standard streams through the `Stdin`, `Stdout` and `Stderr` structs, which are created with the `io::stdin()`, `io::stdout()` and `io::stderr()`  functions respectively.
-
+Rust provides handles to the standard streams through the `Stdin` footnote:[https://doc.rust-lang.org/std/io/struct.Stdin.html], `Stdout` footnote:[https://doc.rust-lang.org/std/io/struct.Stdout.html] and `Stderr` footnote:[https://doc.rust-lang.org/std/io/struct.Stderr.html] structs, which are created with the `io::stdin()` footnote:[https://doc.rust-lang.org/std/io/fn.stdin.html], `io::stdout()` footnote:[https://doc.rust-lang.org/std/io/fn.stdout.html] and `io::stderr()` footnote:[https://doc.rust-lang.org/std/io/fn.stderr.html] functions respectively.
 A program that takes input through stdin, then converts the received string to uppercase, and prints it back out to the terminal through stdout might look like this:
 
 .`src/main.rs`
@@ -39,7 +38,7 @@ fn main() -> io::Result<()> {
 }
 ```
 
-This example includes the `Read` and `Write` traits to ensure they're in scope, as `Stdin` and `Stdout` use these in their implementations to provide the `Read::read_to_string()` and `Write::write_all()` methods.
+This example includes the `Read` footnote:[https://doc.rust-lang.org/std/io/trait.Read.html] and `Write` footnote:[https://doc.rust-lang.org/std/io/trait.Write.html] traits to ensure they're in scope, as `Stdin` and `Stdout` use these in their implementations to provide the `Read::read_to_string()` footnote:[https://doc.rust-lang.org/std/io/trait.Read.html#method.read_to_string] and `Write::write_all()` footnote:[https://doc.rust-lang.org/std/io/trait.Write.html#method.write_all] methods.
 
 == Decoupling using the `Read` and `Write` traits
 
