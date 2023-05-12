@@ -11,7 +11,7 @@ The two output streams handle general output (stdout) and errors (stderr).
 
 Because of this abstraction, programs can use piping to pass the input from one program to another.
 For example, `ls` writes a list of directory contents to stdout, and `grep` takes input through stdin to filter.
-By chaining these together in a pipe, we can print files that match the word "Cargo" in the current directory to stdout:
+By chaining these together in a pipe, we can print files that match the word "`Cargo`" in the current directory to stdout:
 
     $ ls | grep Cargo
     Cargo.lock
