@@ -2,7 +2,7 @@
 Jeff Kreeftmeijer <https://jeffkreeftmeijer.com>
 2021-06-29
 
-_Standard streams_ are abstractions used to handle data input and output to an operating system process. 
+_Standard streams_ are abstractions used to handle data input and output to an operating system process.
 Each program has access to an input stream (_standard input_, or _stdin_), an output stream (_standard output_, or _stdout_), and an error stream (_standard error_, or _stderr_) inherited from the parent process.
 
 .`grep(1)` filters lines read from stdin with a search pattern ("`three`" in this case) and prints matching lines to stdout. After starting, `grep` halts to wait for input from stdin. By typing this input into the terminal, we can see that `grep` prints any line that matches the pattern back to stdout, which the terminal displays. Then, the program returns to waiting for input until it receives an _EOF_ (_end-of-file_), which we pass by pressing kbd:[ctrl]+kbd:[D] in the terminal.
@@ -32,8 +32,10 @@ _Cargo.toml_
 == `Stdin`, `Stdout` and `Stderr` in Rust
 
 Rust provides handles to the standard streams through the `Stdin` footnote:[https://doc.rust-lang.org/std/io/struct.Stdin.html], `Stdout` footnote:[https://doc.rust-lang.org/std/io/struct.Stdout.html] and `Stderr` footnote:[https://doc.rust-lang.org/std/io/struct.Stderr.html] structs, which are created with the `io::stdin()` footnote:[https://doc.rust-lang.org/std/io/fn.stdin.html], `io::stdout()` footnote:[https://doc.rust-lang.org/std/io/fn.stdout.html] and `io::stderr()` footnote:[https://doc.rust-lang.org/std/io/fn.stderr.html] functions respectively.
-A program that takes input through stdin, then converts the received string to uppercase, and prints it back out to the terminal through stdout might look like this:
 
+.A program that takes input through stdin, then converts the received string to uppercase, and prints it back out to the terminal through stdout.
+[#upcase]
+====
 .`src/main.rs`
 ```rust
 use std::io;
@@ -48,16 +50,18 @@ fn main() -> io::Result<()> {
     Ok(())
 }
 ```
+====
 
-This example includes the `Read` footnote:[https://doc.rust-lang.org/std/io/trait.Read.html] and `Write` footnote:[https://doc.rust-lang.org/std/io/trait.Write.html] traits to ensure they are in scope, as `Stdin` and `Stdout` use these in their implementations to provide the `Read::read_to_string()` footnote:[https://doc.rust-lang.org/std/io/trait.Read.html#method.read_to_string] and `Write::write_all()` footnote:[https://doc.rust-lang.org/std/io/trait.Write.html#method.write_all] methods.
+The stream handlers implement the `Read` footnote:[https://doc.rust-lang.org/std/io/trait.Read.html] and `Write` footnote:[https://doc.rust-lang.org/std/io/trait.Write.html] traits to read from and write to the streams. Because of that, they share part of their implementation with other "`Readers`" and "`Writers`", like `File` footnote:[https://doc.rust-lang.org/std/fs/struct.File.html].
 
 == Decoupling using the `Read` and `Write` traits
 
-One of the issuesfootnote:[Another issue with this prototype is that it uses `Read::read_to_string()`, which will read the contents of the whole stream from the input before writing everything to stdout at once, which is inefficient, especially for larger inputs. A more efficient implementation could use buffered reading through the `BufRead` trait to read and write the input stream line by line.] in the prototype above is that it uses the `Stdout` and `Stdin` structs directly, making our program challenging to test, because it is inconvenient to pass input through stdin and capture stdout to assert that the program produces the correct results.
+One of the issuesfootnote:[Another issue with this example is that it uses `Read::read_to_string()`, which will read the contents of the whole stream from the input before writing everything to stdout at once, which is inefficient, especially for larger inputs. A more efficient implementation could use buffered reading through the `BufRead` trait to read and write the input stream line by line.] in the <<upcase, example>> above is that it uses the `Stdout` and `Stdin` structs directly, making our program challenging to test, because it is inconvenient to pass input through stdin and capture stdout to assert that the program produces the correct results.
 
 To make our program more modular, we will decouple it from the `Stdin` and `Stdout` structs and pass the input and output as arguments to a more abstract, separate function.
-Our prototype was based on functions from the `Read` and `Write` traits, so we will test our new function with input and output data types that also implement those traits: a byte array for input and a vector for output.
 
+.In the test for the extracted function, we swap `Stdin` and `Stdout` out for other implementors of the `Read` and `Write` traits: a byte array for input and a vector for output.
+====
 .`src/lib.rs`
 ```rust
 #[cfg(test)]
@@ -71,10 +75,10 @@ mod tests {
     }
 }
 ```
+====
 
-The implementation that satisfies the test looks like the original prototype from `lib/main.rs`, with a significant difference.
-Because the test passes the input and output as arguments, we can use trait objects to allow any type as long as it implements the `Read` and `Write` traits:
-
+.The implementation that satisfies the test looks like the <<upcase, original example>>, with one significant difference. Because the test passes the input and output as arguments, we can use trait objects to allow any type as long as it implements the `Read` and `Write` traits:
+====
 .`src/lib.rs`
 ```rust
 use std::io::{Error, Read, Write};
@@ -88,9 +92,10 @@ pub fn upcase(input: &mut dyn Read, output: &mut dyn Write) -> Result<(), Error>
     Ok(())
 }
 ```
+====
 
-Finally, we replace the prototype in `src/main.rs` with a call to our new implementation with a `Stdin` and `Stdout` struct for the input and output:
-
+.Finally, we replace the prototype in `src/main.rs` with a call to our new implementation with a `Stdin` and `Stdout` struct for the input and output:
+====
 .`src/main.rs`
 ```
 use std::io;
@@ -99,6 +104,7 @@ fn main() -> io::Result<()> {
     upcase::upcase(&mut io::stdin(), &mut io::stdout())
 }
 ```
+====
 
 By abstracting `Stdin` and `Stdout` out of the implementation, we made our program more modular, allowing us to test the code without resorting to capturing stdout to assert that the printed result matched our expectations.
 
