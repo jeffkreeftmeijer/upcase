@@ -1,1 +1,49 @@
-= Building a Pager in Rust
+= Building a Terminal Pager in Rust
+
+A terminal pager is a unility that reads files and other inputs by page instead
+of printing the whole contents all at once. When opening a file in a utility
+like `less` or `more` the first screenful of text is printed to the terminal
+before waiting for user intput. The user can then use the kbd:[Return] and
+kbd:[Space] keys to load another line or pageful respectively.
+
+// TODO: Screenshot of `more` or `less` reading a file
+
+Besides being useful for allowing users to read files from the top down, pagers
+are also well-equipped for reading large files, as the contents are read when
+they're needed instead of loading the whole file into memory when the file is
+opened, like with most text editors. Besides files, pagers are a great way to
+read input streams that might be endless, or that are still being written to.
+
+Implementing a pager is a great way to learn about input streams, buffered
+reading and dealing with terminal output.
+
+== Input and output
+
+    $ cargo new pager
+
+After generating a new project...
+// TODO: New project to first test
+
+Let's hold off on worrying about paging for now by implementing the simplest
+behaviour we can think of. If the input fits the terminal window, a pager
+prints it out verbatim.footnote:[Since `less` allows scrolling back up, it
+won't quit automatically by default. We'll ignore that for now and will get to
+it when we implement backwards scrolling.]
+
+// TODO: Screenshot of `more` or `less` showing a short file
+
+To mimic this, our first behaviour prints any input out as output.
+// TODO: io, stdin/stdout
+
+``` rust
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn writes_input_to_output() {
+        let mut output: Vec<u8> = Vec::new();
+
+        super::print(&mut "Hello, world!".as_bytes(), &mut output);
+        assert_eq!(&output, b"Hello, world!");
+    }
+}
+```
