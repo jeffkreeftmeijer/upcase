@@ -23,10 +23,10 @@ By typing this input into the terminal, we can see that =grep= prints any line t
 Then, the program returns to waiting for input until it receives an /EOF/ (/end-of-file/), which we pass by pressing ~ctrl+D~ in the terminal.
 
 #+begin_src shell
-grep tree
-one
-two
-three
+  grep tree
+  one
+  two
+  three
 #+end_src
 
 #+begin_example
@@ -40,7 +40,7 @@ This example uses a /pipe/ (=|=) to create a pipeline, to pass the output from =
 =grep= then filters to only print lines matching the passed pattern ("Cargo").
 
 #+begin_src shell
-ls -l ~/pager | grep Cargo
+  ls -l ~/pager | grep Cargo
 #+end_src
 
 #+begin_example
@@ -56,17 +56,17 @@ This program takes input through stdin, converts the received string to uppercas
 
 #+caption: =src/main.rs=
 #+begin_src rust
-use std::io;
-use std::io::{Read, Write};
+  use std::io;
+  use std::io::{Read, Write};
 
-fn main() -> io::Result<()> {
-    let mut buffer = "".to_string();
+  fn main() -> io::Result<()> {
+      let mut buffer = "".to_string();
 
-    io::stdin().read_to_string(&mut buffer)?;
-    io::stdout().write_all(buffer.to_uppercase().as_bytes())?;
+      io::stdin().read_to_string(&mut buffer)?;
+      io::stdout().write_all(buffer.to_uppercase().as_bytes())?;
 
-    Ok(())
-}
+      Ok(())
+  }
 #+end_src
 
 The stream handlers implement the [[https://doc.rust-lang.org/std/io/trait.Read.html][=Read=]] and [[https://doc.rust-lang.org/std/io/trait.Write.html][=Write=]] traits to read from and write to the streams.
@@ -81,40 +81,50 @@ To make our program more modular, we will decouple it from the =Stdin= and =Stdo
 In the test for the extracted function, we swap =Stdin= and =Stdout= out for other implementors of the =Read= and =Write= traits: a byte array for input and a vector for output.
 
 #+caption: =src/lib.rs=
-#+headers: :tangle src/lib.rs
+#+name: test
 #+begin_src rust
-mod tests {
-    use super::*;
+  #[cfg(test)]
+  mod tests {
+      use super::*;
 
-    #[test]
-    fn writes_upcased_input_to_output() {
-        let mut output: Vec<u8> = Vec::new();
+      #[test]
+      fn writes_upcased_input_to_output() {
+          let mut output: Vec<u8> = Vec::new();
 
-        upcase(&mut "Hello, world!\n".as_bytes(), &mut output).unwrap();
-        assert_eq!(&output, b"HELLO, WORLD!\n");
-    }
-}
+          upcase(&mut "Hello, world!\n".as_bytes(), &mut output).unwrap();
+          assert_eq!(&output, b"HELLO, WORLD!\n");
+      }
+  }
 #+end_src
 
 The implementation that satisfies the test looks like the original example, with one significant difference.
 Because the test passes the input and output as arguments, we can use trait objects to allow any type as long as it implements the =Read= and =Write= traits:
 
 #+caption: =src/lib.rs=
-#+headers: :tangle src/lib.rs
+#+name: implementation
 #+begin_src rust
-use std::io::{Error, Read, Write};
+  use std::io::{Error, Read, Write};
 
-pub fn upcase(
-    input: &mut impl Read,
-    output: &mut impl Write,
-) -> Result<(), Error> {
-    let mut buffer = "".to_string();
+  pub fn upcase(
+      input: &mut impl Read,
+      output: &mut impl Write,
+  ) -> Result<(), Error> {
+      let mut buffer = "".to_string();
 
-    input.read_to_string(&mut buffer)?;
-    output.write_all(buffer.to_uppercase().as_bytes())?;
+      input.read_to_string(&mut buffer)?;
+      output.write_all(buffer.to_uppercase().as_bytes())?;
 
-    Ok(())
-}
+      Ok(())
+  }
+#+end_src
+
+#+headers: :tangle src/lib.rs
+#+headers: :noweb yes
+#+headers: :exports none
+#+begin_src rust
+  <<implementation>>
+
+  <<test>>
 #+end_src
 
 Finally, we replace the prototype in =src/main.rs= with a call to our new implementation with a =Stdin= and =Stdout= struct for the input and output:
@@ -122,11 +132,11 @@ Finally, we replace the prototype in =src/main.rs= with a call to our new implem
 #+caption: =src/main.rs=
 #+headers: :tangle src/main.rs
 #+begin_src rust
-use std::io;
+  use std::io;
 
-fn main() -> io::Result<()> {
-    upcase::upcase(&mut io::stdin(), &mut io::stdout())
-}
+  fn main() -> io::Result<()> {
+      upcase::upcase(&mut io::stdin(), &mut io::stdout())
+  }
 #+end_src
 
 By abstracting =Stdin= and =Stdout= out of the implementation, we made our program more modular, allowing us to test the code without resorting to capturing stdout to assert that the printed result matched our expectations.
