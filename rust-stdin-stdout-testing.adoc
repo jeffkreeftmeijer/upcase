@@ -1,4 +1,4 @@
-= Testing Input and Output in Rust Command Line Applications
+= Testing input and output in Rust command line applications
 Jeff Kreeftmeijer <https://jeffkreeftmeijer.com>
 2021-06-29
 
