@@ -1,11 +1,5 @@
 use std::io;
-use std::io::{Read, Write};
 
 fn main() -> io::Result<()> {
-    let mut buffer = "".to_string();
-
-    io::stdin().read_to_string(&mut buffer)?;
-    io::stdout().write_all(buffer.to_uppercase().as_bytes())?;
-
-    Ok(())
+    upcase::upcase(&mut io::stdin(), &mut io::stdout())
 }
