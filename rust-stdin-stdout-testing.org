@@ -17,15 +17,29 @@ Using abstraction through Rust's =Read= and =Write= traits, we can swap the inpu
 /Standard streams/ are abstractions used to handle data input and output to an operating system process.
 Each program has access to an input stream (/standard input/, or /stdin/), an output stream (/standard output/, or /stdout/), and an error stream (/standard error/, or /stderr/) inherited from the parent process.
 
-For example, =grep(1)= filters lines read from stdin with a search pattern ("three" in this case) and prints the matching lines to stdout.
-After starting, =grep= halts to wait for input from stdin.
-By typing this input into the terminal, we can see that =grep= prints any line that matches the pattern back to stdout, which the terminal displays.
-Then, the program returns to waiting for input until it receives an /EOF/ (/end-of-file/), which we pass by pressing ~ctrl+D~ in the terminal.
+An example of a program that takes input from stdin, processes it and returns output through stdout is /grep/.
+The grep utility reads lines from stdin, filters those lines based on the user-supplied search pattern, and finally outputs all lines that match the pattern.
+When evaluated, the grep utility halts to wait for input through stdin.
+In this example, we start grep and pass it "th" as the search pattern:
 
 #+begin_src shell
-  grep tree
+  grep th
+#+end_src
+
+If we type "one", and press enter a new line gets passed to grep through stdin.
+Grep takes the line, and notices that it doesn't match the search pattern, so it does nothing:
+
+#+begin_src shell
+  grep th
   one
-  two
+#+end_src
+
+Now, if we send a line that does match the search pattern, like "three" or "fourth", grep will print it back through stdout.
+The result is slightly confusing, as stdin and stdout are mixed in the terminal, but here, the first "three" is typed manually and the second is returned by grep:
+
+#+begin_src shell
+  grep th
+  one
   three
 #+end_src
 
@@ -33,11 +47,15 @@ Then, the program returns to waiting for input until it receives an /EOF/ (/end-
 three
 #+end_example
 
-Because of this abstraction, programs can use /pipelines/ to pass the output from one program as the input to another by piping stdout from one process to stdin for another.
+Then, like before, the program returns to waiting for input until it receives an /EOF/ (/end-of-file/), which we pass by pressing ~ctrl+D~ in the terminal.
 
-Here, =ls(1)= prints the current directory's contents to stdout.
-This example uses a /pipe/ (=|=) to create a pipeline, to pass the output from =ls= as input to =grep=.
-=grep= then filters to only print lines matching the passed pattern ("Cargo").
+** Pipelines
+
+Because of this abstraction, programs can use /pipelines/ to pass the output from one program as the input to another by /piping/ stdout from one process to stdin for another.
+
+Here, /ls/ prints the current directory's contents to stdout.
+This example uses a /pipe/ character to create a pipeline, to pass the output from ls as input to grep.
+Grep then filters to only print lines matching the passed pattern ("Cargo").
 
 #+headers: :cache yes
 #+headers: :exports both
