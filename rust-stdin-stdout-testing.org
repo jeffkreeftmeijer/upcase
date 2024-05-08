@@ -68,7 +68,7 @@ Grep then filters to only print lines matching the passed pattern ("Cargo").
 : Cargo.lock
 : Cargo.toml
 
-* =Stdin=, =Stdout= and =Stderr= in Rust
+* Stdin, Stdout and Stderr in Rust
 
 Rust provides handles to the standard streams through the [[https://doc.rust-lang.org/std/io/struct.Stdin.html][=Stdin=]], [[https://doc.rust-lang.org/std/io/struct.Stdout.html][=Stdout=]] and [[https://doc.rust-lang.org/std/io/struct.Stderr.html][=Stderr=]] structs, which are created with the [[https://doc.rust-lang.org/std/io/fn.stdin.html][=io::stdin()=]], [[https://doc.rust-lang.org/std/io/fn.stdout.html][=io::stdout()=]] and [[https://doc.rust-lang.org/std/io/fn.stderr.html][=io::stderr()=]] functions respectively.
 
@@ -105,7 +105,7 @@ To test the program, we can pipe the output of ~ls | grep Cargo~ to it, which wi
 : CARGO.LOCK
 : CARGO.TOML
 
-* Abstraction using the =Read= and =Write= traits
+* Abstraction using the Read and Write traits
 
 One of the issues[fn:another-issue] in the example above is that it uses the =Stdout= and =Stdin= structs directly, making our program challenging to test because it is inconvenient to pass input through stdin and capture stdout to assert that the program produces the correct results.
 
